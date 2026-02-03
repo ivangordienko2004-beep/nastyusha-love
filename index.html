@@ -1,0 +1,968 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0b10" />
+  <title>Для Насти ❤️</title>
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Crect width='100%25' height='100%25' rx='20' fill='%230b0b10'/%3E%3Ctext x='50%25' y='58%25' dominant-baseline='middle' text-anchor='middle' font-size='54'%3E%F0%9F%92%97%3C/text%3E%3C/svg%3E" />
+
+  <style>
+    :root{
+      --bg: #0b0b10;
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.70);
+      --shadow: 0 24px 70px rgba(0,0,0,.45);
+
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+
+      --maxw: 430px;
+    }
+
+    *{ box-sizing: border-box; }
+    html, body { height: 100%; }
+    body{
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      overflow: hidden;
+    }
+
+    /* ====== ФОН: кросс-фейд 2 слоёв + blur ====== */
+    .bgWrap{
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+      background: var(--bg);
+    }
+    .bgLayer{
+      position: absolute;
+      inset: -20%;
+      opacity: 0;
+      filter: blur(0px) saturate(1.15);
+      transform: translateZ(0);
+      transition: opacity .85s ease, filter .85s ease;
+      will-change: opacity, filter;
+      background:
+        radial-gradient(1200px 900px at 20% 10%, var(--c1, rgba(255, 98, 190, .22)), transparent 60%),
+        radial-gradient(1100px 800px at 85% 25%, var(--c2, rgba(120, 174, 255, .22)), transparent 62%),
+        radial-gradient(900px 900px at 50% 90%, var(--c3, rgba(255, 180, 120, .18)), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0));
+    }
+    .bgLayer.on{
+      opacity: 1;
+      filter: blur(14px) saturate(1.25);
+    }
+
+    .frame{
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: calc(12px + var(--safe-top)) calc(12px + var(--safe-right)) calc(12px + var(--safe-bottom)) calc(12px + var(--safe-left));
+      pointer-events: none;
+      z-index: 1;
+    }
+    .shell{
+      width: min(100%, var(--maxw));
+      height: 100svh;
+      border-radius: 28px;
+      outline: 1px solid rgba(255,255,255,.10);
+      box-shadow: var(--shadow);
+      background: rgba(0,0,0,.10);
+      overflow: hidden;
+      pointer-events: auto;
+      position: relative;
+    }
+
+    .scroller{
+      height: 100%;
+      overflow-y: auto;
+      scroll-snap-type: y mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      position: relative;
+      z-index: 1;
+    }
+    .scroller::-webkit-scrollbar{ width: 0; height: 0; }
+
+    .topbar{
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      padding: calc(10px + var(--safe-top)) 14px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: linear-gradient(180deg, rgba(10,10,14,.85), rgba(10,10,14,.35), transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+
+    .brand{ display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .badge{
+      width: 34px; height: 34px; border-radius: 12px;
+      display: grid; place-items: center;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: 0 12px 28px rgba(0,0,0,.25);
+      flex: 0 0 auto;
+    }
+    .titlewrap{ min-width: 0; }
+    .apptitle{
+      font-weight: 700;
+      letter-spacing: .2px;
+      font-size: 14px;
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .subtitle{
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.1;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .actions{ display: flex; gap: 8px; flex: 0 0 auto; }
+    .btn{
+      appearance: none;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 14px;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn:active{ transform: scale(.98); }
+    .btn:hover{ background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.18); }
+
+    .dots{
+      position: absolute;
+      right: 10px;
+      top: calc(62px + var(--safe-top));
+      z-index: 29;
+      display: grid;
+      gap: 6px;
+      padding: 10px;
+      pointer-events: none;
+    }
+    .dot{
+      width: 6px; height: 6px; border-radius: 99px;
+      background: rgba(255,255,255,.25);
+      transition: transform .25s ease, background .25s ease;
+    }
+    .dot.active{ background: rgba(255,255,255,.80); transform: scale(1.25); }
+
+    .slide{
+      height: 100svh;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      display: grid;
+      align-items: end;
+      padding: 16px calc(16px + var(--safe-right)) calc(18px + var(--safe-bottom)) calc(16px + var(--safe-left));
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .card{
+      width: 100%;
+      border-radius: 26px;
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: 0 20px 60px rgba(0,0,0,.40);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      padding: 16px 14px;
+      transform: translateY(14px);
+      opacity: 0;
+      transition: transform .7s cubic-bezier(.2,.9,.2,1), opacity .7s ease;
+    }
+    .slide.active .card{ transform: translateY(0px); opacity: 1; }
+
+    .kicker{
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.08);
+      color: rgba(255,255,255,.85);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+
+    /* ====== Фото блок (glass + параллакс) ====== */
+    .media{
+      margin: 0 0 12px 0;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      box-shadow: 0 18px 45px rgba(0,0,0,.35);
+      position: relative;
+      aspect-ratio: 4 / 3;
+    }
+    .media img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: translate3d(0, var(--par, 0px), 0) scale(1.06);
+      transition: opacity .35s ease;
+      will-change: transform;
+      display: block;
+    }
+    .media::after{
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.0), rgba(0,0,0,.18)),
+        radial-gradient(700px 300px at 20% 15%, rgba(255,255,255,.12), transparent 60%);
+      pointer-events: none;
+    }
+
+    .h1{ margin: 12px 0 8px; font-size: 22px; line-height: 1.15; letter-spacing: .2px; }
+    .h2{ margin: 10px 0 8px; font-size: 18px; line-height: 1.2; letter-spacing: .2px; }
+    .p{
+      margin: 0;
+      color: rgba(255,255,255,.86);
+      font-size: 15px;
+      line-height: 1.45;
+      letter-spacing: .1px;
+      white-space: pre-wrap;
+    }
+    .muted{ color: var(--muted); font-size: 13px; line-height: 1.35; margin-top: 10px; }
+
+    /* свайп индикатор (более "тик-ток") */
+    .swipeRail{
+      position: absolute;
+      right: 12px;
+      bottom: calc(92px + var(--safe-bottom));
+      z-index: 22;
+      pointer-events: none;
+      display: grid;
+      gap: 10px;
+      place-items: center;
+      opacity: .9;
+    }
+    .swipeWord{
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-size: 11px;
+      letter-spacing: .22em;
+      color: rgba(255,255,255,.55);
+      text-transform: uppercase;
+    }
+    .swipeChevron{
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.28);
+      display: grid;
+      place-items: center;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      animation: bob 1.6s ease-in-out infinite;
+    }
+
+    .footerhint{
+      position: absolute;
+      left: 0; right: 0;
+      bottom: calc(10px + var(--safe-bottom));
+      display: grid;
+      place-items: center;
+      z-index: 10;
+      pointer-events: none;
+      opacity: .92;
+    }
+    .hintpill{
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.35);
+      border: 1px solid rgba(255,255,255,.12);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: rgba(255,255,255,.82);
+      font-size: 12px;
+      animation: bob 1.8s ease-in-out infinite;
+    }
+    @keyframes bob{ 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-6px); } }
+
+    /* ====== TikTok actions справа (лайк/шэр/снизу подсказка) ====== */
+    .actionsRail{
+      position: absolute;
+      right: 10px;
+      bottom: calc(18px + var(--safe-bottom));
+      z-index: 28;
+      display: grid;
+      gap: 10px;
+      pointer-events: auto;
+    }
+    .pillBtn{
+      width: 46px;
+      padding: 10px 0;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.28);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: rgba(255,255,255,.9);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease;
+    }
+    .pillBtn:active{ transform: scale(.98); }
+    .pillBtn:hover{ background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.18); }
+
+    .count{
+      font-size: 11px;
+      color: rgba(255,255,255,.78);
+      margin-top: 6px;
+      text-align: center;
+      font-weight: 700;
+    }
+    .stackItem{
+      display: grid;
+      place-items: center;
+      gap: 2px;
+    }
+    .heartIcon{
+      font-size: 18px;
+      line-height: 1;
+      transform: translateZ(0);
+      transition: transform .18s ease;
+    }
+    .pillBtn.liked .heartIcon{ transform: scale(1.12); }
+
+    /* большой лайк при дабл-тапе */
+    .bigLike{
+      position: fixed;
+      z-index: 50;
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(.6);
+      opacity: 0;
+      filter: drop-shadow(0 18px 24px rgba(0,0,0,.35));
+      transition: transform .38s cubic-bezier(.2,.9,.2,1), opacity .38s ease;
+      font-size: 64px;
+    }
+    .bigLike.on{
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    /* лёгкие сердечки (фоновые) */
+    .heart{
+      position: fixed;
+      z-index: 5;
+      pointer-events: none;
+      opacity: .0;
+      transform: translate3d(0,0,0) scale(1);
+      filter: drop-shadow(0 10px 14px rgba(0,0,0,.25));
+      animation: floatUp linear forwards;
+      will-change: transform, opacity;
+    }
+    @keyframes floatUp{
+      0%   { opacity: 0; transform: translate3d(var(--x), calc(var(--y) + 80px), 0) scale(var(--s)); }
+      10%  { opacity: .85; }
+      90%  { opacity: .75; }
+      100% { opacity: 0; transform: translate3d(calc(var(--x) + var(--dx)), calc(var(--y) - 220px), 0) scale(calc(var(--s) * 1.05)); }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .bgLayer{ transition: none; }
+      .hintpill, .swipeChevron{ animation: none; }
+      .heart{ display: none; }
+      .card{ transition: none; opacity: 1; transform: none; }
+      .media img{ transform: none; }
+    }
+
+    @media (max-width: 480px){
+      .shell{ border-radius: 0; outline: none; box-shadow: none; }
+      .frame{ padding: 0; }
+      .dots{ right: 6px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bgWrap">
+    <div class="bgLayer" id="bgA"></div>
+    <div class="bgLayer" id="bgB"></div>
+  </div>
+
+  <div class="frame">
+    <div class="shell" id="shell">
+      <div class="scroller" id="scroller">
+        <div class="topbar">
+          <div class="brand">
+            <div class="badge">💞</div>
+            <div class="titlewrap">
+              <div class="apptitle">Для Насти</div>
+              <div class="subtitle" id="sub">листай вниз ❤️</div>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn" id="shareBtn" type="button">Поделиться</button>
+            <button class="btn" id="restartBtn" type="button">С начала</button>
+          </div>
+        </div>
+
+        <div class="dots" id="dots" aria-hidden="true"></div>
+
+        <!-- TikTok-like actions rail -->
+        <div class="actionsRail" aria-label="actions">
+          <div class="stackItem">
+            <div class="pillBtn" id="likeBtn" title="Лайк (или дабл-тап по экрану)">
+              <div class="heartIcon" id="heartIcon">🤍</div>
+            </div>
+            <div class="count" id="likeCount">0</div>
+          </div>
+
+          <div class="stackItem">
+            <div class="pillBtn" id="copyBtn" title="Скопировать ссылку">
+              🔗
+            </div>
+            <div class="count">link</div>
+          </div>
+        </div>
+
+        <div class="swipeRail" aria-hidden="true">
+          <div class="swipeWord">SWIPE</div>
+          <div class="swipeChevron">⬆️</div>
+        </div>
+
+        <!-- Слайды генерируются JS -->
+        <div id="slidesRoot"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bigLike" id="bigLike">💗</div>
+
+  <script>
+    // ========= Фото для пунктов 1..20 =========
+    // Папка: /img/
+    // Имена: photo1.jpg ... photo20.jpg (можешь потом переименовать)
+    const photoPath = (n) => `img/photo${n}.jpg`;
+
+    // ========= Палитры фона (на каждый активный слайд) =========
+    // Можно не трогать. Если хочешь — подберу под ваши фото.
+    const palettes = [
+      ["rgba(255,98,190,.26)","rgba(120,174,255,.22)","rgba(255,180,120,.18)"],
+      ["rgba(255,120,170,.24)","rgba(120,210,255,.20)","rgba(255,210,160,.16)"],
+      ["rgba(255,160,110,.22)","rgba(160,120,255,.20)","rgba(120,220,200,.18)"],
+      ["rgba(255,110,210,.22)","rgba(110,180,255,.22)","rgba(255,220,130,.16)"],
+      ["rgba(255,180,120,.22)","rgba(120,160,255,.22)","rgba(255,120,170,.16)"],
+    ];
+
+    // ====== ТЕКСТ / СЛАЙДЫ ======
+    const slides = [
+      {
+        kicker: "Настюш, зайка, моя!",
+        title: "Мне важно, чтобы ты знала…",
+        text:
+`Я, честно говоря, не знаю почему ты думаешь, что мне не очень сильно нравишься. Правда, не знаю!
+Но поверь мне: нравишься ты мне безумно сильно, и мне никто другой не нужен, кроме тебя ❤️
+
+И, может быть, сходу я не могу назвать все причины почему ты мне нравишься.
+Но сформулировать их смогу:`
+      },
+
+      // 1..20 — добавил photo: img/photoN.jpg
+      { kicker: "1/20", title: "Ты очень умная", photo: photoPath(1), text:
+`Ты будешь, наверное, думать, что я тебя обманываю, но поверь мне — меня бесят глупые люди. А ты мне нравишься!
+За это ты мне нравишься ❤️` },
+
+      { kicker: "2/20", title: "Ты самостоятельная", photo: photoPath(2), text:
+`И это очень важно. Я тебе всегда готов помочь.
+Но мне нравится, что в сложной ситуации ты не впадаешь в панику. И можешь решить проблему сама без нытья.
+За это ты мне нравишься ❤️` },
+
+      { kicker: "3/20", title: "Ты очень и очень красивая", photo: photoPath(3), text:
+`Целиком и полностью. Начиная от твоих зелёных глаз, заканчивая стройными ногами.
+В тебе всё идеально.
+За это ты мне нравишься ❤️` },
+
+      { kicker: "4/20", title: "Ты безумно вкусно готовишь", photo: photoPath(4), text:
+`Это прям каеф. У тебя всё очень вкусно получается.
+Я готов ехать через весь город к тебе на ужин — ведь это того стоит.
+За это ты мне нравишься ❤️` },
+
+      { kicker: "5/20", title: "Ты социально активная", photo: photoPath(5), text:
+`Участвуешь во всём. И мне это нравится.
+Я когда-то тоже раньше такой был, но, к сожалению, у меня это всё как-то угасло — и мне сейчас комфортнее провести время с тобой или друзьями, или семьёй.
+За это ты мне нравишься ❤️` },
+
+      { kicker: "6/20", title: "Ты ведёшь здоровый образ жизни", photo: photoPath(6), text:
+`Не куришь и не пьёшь. Мне это очень нравится — ведь я сам соблюдаю эти правила.
+Надеюсь, что в последних кружочках в тг — это были шутки 😂
+За это ты мне нравишься ❤️` },
+
+      { kicker: "7/20", title: "Твоя улыбка — чудо", photo: photoPath(7), text:
+`Это просто восьмое чудо света. Я от неё таю.
+Это очень-очень красиво.
+За это ты мне нравишься ❤️` },
+
+      { kicker: "8/20", title: "У тебя есть принципы", photo: photoPath(8), text:
+`Ты их отстаиваешь. Очень здорово, что ты девочка с настойчивым характером, а не "тряпка".
+И не важно, насколько твоё мнение правильное — я буду всегда на твоей стороне.
+Только наедине с тобой могу "подушнить", но только с целью сделать лучше. А в обществе — всегда на твоей стороне.
+За это ты мне нравишься ❤️` },
+
+      { kicker: "9/20", title: "Твой внутренний ребёнок", photo: photoPath(9), text:
+`Кто-то назовёт это инфантильностью. А я скажу так: мне нравится, когда в тебе играет твой внутренний ребёнок.
+Это каеф. На сердце сразу становится тепло.
+Может быть, внешне я это не показываю, но внутренне я радуюсь всегда.
+За это ты мне нравишься ❤️` },
+
+      { kicker: "10/20", title: "С тобой можно куда угодно", photo: photoPath(10), text:
+`Хоть в театр, хоть на лыжи погонять.
+И это очень круто и комфортно.
+За это ты мне нравишься ❤️` },
+
+      { kicker: "11/20", title: "Ты мотивируешь развиваться", photo: photoPath(11), text:
+`Ты не давишь. А вот просто как-то рядом находишься — и этого хватает.
+За это ты мне нравишься ❤️` },
+
+      { kicker: "12/20", title: "Я таю от твоей нежности", photo: photoPath(12), text:
+`Твои прикосновения сводят меня с ума.
+Когда фильм смотрим в обнимку, когда беру тебя за руку, когда целую — мне очень хорошо.
+И все проблемы как будто уходят.
+За это ты мне нравишься ❤️` },
+
+      { kicker: "13/20", title: "Твой музыкальный опыт", photo: photoPath(13), text:
+`Это очень здорово.
+Песня "Жги" — моя любимая. А на рингтоне до сих пор твоя песня.
+За это ты мне нравишься ❤️` },
+
+      { kicker: "14/20", title: "Ты не меркантильная", photo: photoPath(14), text:
+`От меня не требуешь чего-то невероятного. И за всё благодарна.
+За это ты мне нравишься ❤️` },
+
+      { kicker: "15/20", title: "Ты активная в общении", photo: photoPath(15), text:
+`И в жизни, и в переписке, и видеосозвонах.
+Да, мне тоже нравится с тобой общаться.
+За это ты мне нравишься ❤️` },
+
+      { kicker: "16/20", title: "Ты — \"нормальная\" (в хорошем смысле)", photo: photoPath(16), text:
+`У тебя все устои, которые я считаю правильными: существует два пола, патриотка, помощь друзьям, не феминистка и т.д.
+За это ты мне нравишься ❤️` },
+
+      { kicker: "17/20", title: "Ты уважаешь моё время", photo: photoPath(17), text:
+`Мне нравится, что ты адекватно относишься к "моему" времени, когда я занят.
+Когда у меня занятие — ты не просто тихо подождёшь, а сделаешь чай/ужин. Или, когда у меня пара — просто меня подождёшь.
+За это ты мне нравишься ❤️` },
+
+      { kicker: "18/20", title: "Тебе интересно познавать мир", photo: photoPath(18), text:
+`Как мне интересно посидеть с тобой за юриспруденцией, так и тебе интересно "позалипать" с нейронками — а ещё и поучиться ими пользоваться.
+За это ты мне нравишься ❤️` },
+
+      { kicker: "19/20", title: "С тобой я могу быть честен", photo: photoPath(19), text:
+`Могу сказать, что ушёл на пересдачу — и не чувствовать себя глупым.
+Могу сказать, что где-то схитрил — и не чувствовать себя обманщиком.
+За это ты мне нравишься ❤️` },
+
+      { kicker: "20/20", title: "Твоё счастье в простоте", photo: photoPath(20), text:
+`На кухне поиграть с ньютоноской жидкостью; на улице пошёл снег; просто брызнуть в лицо воды, когда помыла руки.
+За это ты мне нравишься ❤️` },
+
+      {
+        kicker: "И ещё…",
+        title: "Я могу написать ещё миллион пунктов",
+        text:
+`…и могу писать их настолько подробно, что дойду до фраз: «бежииииим — на улице холодно… бррррр… оооо каеф попе» 😂
+
+Ты мне очень нравишься! Честно говоря, я не очень понимаю почему ты думаешь, что ты мне не нравишься.
+
+Возможно, ты хотела бы, чтобы я что-то делал для тебя ещё. Ты только скажи!
+Я умею слышать! И что-то просить — это нормально. Я на всё адекватно реагирую.
+Если тебя что-то беспокоит — ты скажи обязательно!`
+      },
+
+      {
+        kicker: "Ты моя ❤️",
+        title: "И я рядом",
+        text:
+`Ты моя и я тебя никому не отдам: ни азербойджанцу, ни Серёже, ни клану Сопрыкиных! Никому!
+
+Я за тебя горой. Всегда.
+Будь уверена, что ты мне нравишься.
+Для меня ты 11 из 10 ❤️`
+      },
+
+      {
+        kicker: "Финал",
+        title: "Целую 🤍",
+        text:
+`Спасибо, что ты есть!
+
+(Листай вверх, если хочется ещё раз.)`,
+        footer: "Сделано специально для тебя • ❤️"
+      }
+    ];
+
+    // ====== РЕНДЕР ======
+    const root = document.getElementById("slidesRoot");
+    const dots = document.getElementById("dots");
+    const scroller = document.getElementById("scroller");
+    const sub = document.getElementById("sub");
+
+    function makeSlide(s, i){
+      const section = document.createElement("section");
+      section.className = "slide";
+      section.dataset.index = String(i);
+
+      const card = document.createElement("div");
+      card.className = "card";
+
+      // PHOTO block (если задано)
+      if (s.photo){
+        const media = document.createElement("div");
+        media.className = "media";
+
+        const img = document.createElement("img");
+        img.src = s.photo;
+        img.alt = "photo";
+        img.loading = "lazy";
+        img.decoding = "async";
+
+        // если фото ещё не добавили — не ломаем страницу
+        img.onerror = () => { img.style.opacity = "0"; media.style.display = "none"; };
+
+        media.appendChild(img);
+        card.appendChild(media);
+      }
+
+      const kicker = document.createElement("div");
+      kicker.className = "kicker";
+      kicker.textContent = s.kicker || `Слайд ${i+1}`;
+
+      const title = document.createElement("div");
+      title.className = i === 0 ? "h1" : "h2";
+      title.textContent = s.title || "";
+
+      const p = document.createElement("p");
+      p.className = "p";
+      p.textContent = s.text || "";
+
+      card.appendChild(kicker);
+      if (s.title) card.appendChild(title);
+      card.appendChild(p);
+
+      if (s.footer){
+        const f = document.createElement("div");
+        f.className = "muted";
+        f.textContent = s.footer;
+        card.appendChild(f);
+      }
+
+      section.appendChild(card);
+
+      if (i === 0){
+        const hint = document.createElement("div");
+        hint.className = "footerhint";
+        hint.innerHTML = `<div class="hintpill">⬆️ Свайпай вниз <span style="opacity:.9">•</span> как в рилс</div>`;
+        section.appendChild(hint);
+      }
+
+      return section;
+    }
+
+    function build(){
+      root.innerHTML = "";
+      dots.innerHTML = "";
+
+      slides.forEach((s, i) => {
+        root.appendChild(makeSlide(s, i));
+
+        const d = document.createElement("div");
+        d.className = "dot" + (i === 0 ? " active" : "");
+        d.dataset.index = String(i);
+        dots.appendChild(d);
+      });
+    }
+    build();
+
+    const slideEls = Array.from(document.querySelectorAll(".slide"));
+    const dotEls = Array.from(document.querySelectorAll(".dot"));
+
+    // ====== ФОН: кросс-фейд ======
+    const bgA = document.getElementById("bgA");
+    const bgB = document.getElementById("bgB");
+    let bgOnA = true;
+
+    function setBgPalette(idx){
+      const pal = palettes[idx % palettes.length];
+      const target = bgOnA ? bgB : bgA;     // обновляем "неактивный" слой
+      const active = bgOnA ? bgA : bgB;
+
+      target.style.setProperty("--c1", pal[0]);
+      target.style.setProperty("--c2", pal[1]);
+      target.style.setProperty("--c3", pal[2]);
+
+      // включаем target, выключаем active
+      active.classList.remove("on");
+      target.classList.add("on");
+      bgOnA = !bgOnA;
+    }
+
+    // ====== LIKE (пер-слайд) с localStorage ======
+    const likeBtn = document.getElementById("likeBtn");
+    const likeCountEl = document.getElementById("likeCount");
+    const heartIcon = document.getElementById("heartIcon");
+    const bigLike = document.getElementById("bigLike");
+
+    const LS_KEY = "love_likes_v1";
+    function loadLikes(){
+      try{
+        return JSON.parse(localStorage.getItem(LS_KEY) || "{}");
+      }catch(e){ return {}; }
+    }
+    function saveLikes(obj){
+      localStorage.setItem(LS_KEY, JSON.stringify(obj));
+    }
+    let likes = loadLikes();
+    let activeIndex = 0;
+
+    function isLiked(idx){ return !!likes[idx]; }
+    function toggleLike(idx){
+      likes[idx] = !likes[idx];
+      saveLikes(likes);
+      renderLikeUI(idx);
+    }
+    function renderLikeUI(idx){
+      const liked = isLiked(idx);
+      likeBtn.classList.toggle("liked", liked);
+      heartIcon.textContent = liked ? "💗" : "🤍";
+      // здесь "счётчик" — 1 если лайкнут, 0 если нет (можно расширить на реальный count)
+      likeCountEl.textContent = liked ? "1" : "0";
+    }
+
+    likeBtn.addEventListener("click", () => toggleLike(activeIndex));
+
+    // ====== КНОПКИ ======
+    document.getElementById("restartBtn").addEventListener("click", () => {
+      scroller.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    document.getElementById("shareBtn").addEventListener("click", async () => {
+      const url = location.href;
+      const shareData = { title: "Для Насти ❤️", text: "Открой. Это для тебя 🙂", url };
+      try{
+        if (navigator.share) await navigator.share(shareData);
+        else if (navigator.clipboard){ await navigator.clipboard.writeText(url); toast("Ссылка скопирована ✨"); }
+        else toast("Скопируй ссылку из адресной строки 🙂");
+      }catch(e){}
+    });
+
+    document.getElementById("copyBtn").addEventListener("click", async () => {
+      const url = location.href;
+      try{
+        await navigator.clipboard.writeText(url);
+        toast("Ссылка скопирована ✨");
+      }catch(e){
+        toast("Не удалось скопировать 😅");
+      }
+    });
+
+    // ====== TOAST ======
+    let toastEl;
+    function toast(msg){
+      if (!toastEl){
+        toastEl = document.createElement("div");
+        toastEl.style.position = "fixed";
+        toastEl.style.left = "50%";
+        toastEl.style.bottom = "18px";
+        toastEl.style.transform = "translateX(-50%)";
+        toastEl.style.padding = "10px 12px";
+        toastEl.style.borderRadius = "14px";
+        toastEl.style.background = "rgba(0,0,0,.55)";
+        toastEl.style.border = "1px solid rgba(255,255,255,.14)";
+        toastEl.style.backdropFilter = "blur(10px)";
+        toastEl.style.webkitBackdropFilter = "blur(10px)";
+        toastEl.style.color = "rgba(255,255,255,.92)";
+        toastEl.style.fontWeight = "700";
+        toastEl.style.fontSize = "12px";
+        toastEl.style.zIndex = "999";
+        toastEl.style.opacity = "0";
+        toastEl.style.transition = "opacity .25s ease, transform .25s ease";
+        document.body.appendChild(toastEl);
+      }
+      toastEl.textContent = msg;
+      toastEl.style.opacity = "1";
+      toastEl.style.transform = "translateX(-50%) translateY(-6px)";
+      clearTimeout(toastEl._t);
+      toastEl._t = setTimeout(() => {
+        toastEl.style.opacity = "0";
+        toastEl.style.transform = "translateX(-50%) translateY(0px)";
+      }, 1400);
+    }
+
+    // ====== АКТИВАЦИЯ СЛАЙДА (IntersectionObserver) ======
+    function setActive(idx){
+      activeIndex = idx;
+      dotEls.forEach((d, i) => d.classList.toggle("active", i === idx));
+      sub.textContent = `${idx+1} / ${slides.length}`;
+      setBgPalette(idx);
+      renderLikeUI(idx);
+    }
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting){
+          e.target.classList.add("active");
+          const idx = Number(e.target.dataset.index || 0);
+          setActive(idx);
+        }
+      });
+    }, { root: scroller, threshold: 0.55 });
+
+    slideEls.forEach(s => io.observe(s));
+
+    // ====== ПАРАЛЛАКС ФОТО при скролле ======
+    // обновляем только видимые слайды
+    const visible = new Set();
+    const io2 = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        const idx = Number(e.target.dataset.index || 0);
+        if (e.isIntersecting) visible.add(idx);
+        else visible.delete(idx);
+      });
+    }, { root: scroller, threshold: 0.01 });
+
+    slideEls.forEach(s => io2.observe(s));
+
+    let raf = 0;
+    function parallaxTick(){
+      raf = 0;
+      const scRect = scroller.getBoundingClientRect();
+      visible.forEach(idx => {
+        const el = slideEls[idx];
+        const img = el.querySelector(".media img");
+        if (!img) return;
+
+        const r = el.getBoundingClientRect();
+        const center = (r.top + r.bottom) / 2;
+        const scCenter = (scRect.top + scRect.bottom) / 2;
+        const dist = (center - scCenter);
+
+        // диапазон параллакса (px)
+        const par = Math.max(-24, Math.min(24, -dist * 0.06));
+        img.style.setProperty("--par", `${par.toFixed(2)}px`);
+      });
+    }
+
+    scroller.addEventListener("scroll", () => {
+      if (!raf) raf = requestAnimationFrame(parallaxTick);
+    }, { passive: true });
+
+    // ====== DOUBLE TAP LIKE (как TikTok) ======
+    let lastTap = 0;
+    let lastX = 0, lastY = 0;
+
+    function showBigLike(x, y){
+      bigLike.style.left = `${x}px`;
+      bigLike.style.top = `${y}px`;
+      bigLike.classList.add("on");
+      setTimeout(() => bigLike.classList.remove("on"), 520);
+    }
+
+    // дабл-тап по shell (не по кнопкам)
+    const shell = document.getElementById("shell");
+    shell.addEventListener("pointerup", (e) => {
+      const now = Date.now();
+      const x = e.clientX, y = e.clientY;
+
+      // если тап по кнопке/интерактиву — выходим
+      if (e.target.closest(".btn") || e.target.closest(".pillBtn")) return;
+
+      const dt = now - lastTap;
+      const dx = Math.abs(x - lastX);
+      const dy = Math.abs(y - lastY);
+
+      if (dt < 280 && dx < 24 && dy < 24){
+        // double tap
+        if (!isLiked(activeIndex)) toggleLike(activeIndex);
+        showBigLike(x, y);
+        for (let i=0;i<5;i++) setTimeout(()=>spawnHeart(x + (Math.random()-0.5)*40), i*65);
+        lastTap = 0;
+        return;
+      }
+      lastTap = now;
+      lastX = x; lastY = y;
+    }, { passive: true });
+
+    // ====== СЕРДЕЧКИ (фоновые + при тапе) ======
+    const HEARTS = ["💗","💖","💘","💞","💕","💝"];
+    function spawnHeart(x = Math.random() * window.innerWidth){
+      const h = document.createElement("div");
+      h.className = "heart";
+      h.textContent = HEARTS[(Math.random()*HEARTS.length)|0];
+
+      const y = window.innerHeight * (0.65 + Math.random()*0.25);
+      const dx = (Math.random() - 0.5) * 80;
+      const s = 0.8 + Math.random()*0.9;
+
+      h.style.setProperty("--x", `${x}px`);
+      h.style.setProperty("--y", `${y}px`);
+      h.style.setProperty("--dx", `${dx}px`);
+      h.style.setProperty("--s", s.toFixed(2));
+
+      const dur = 3200 + Math.random()*2200;
+      h.style.animationDuration = `${dur}ms`;
+      h.style.left = "0";
+      h.style.top = "0";
+
+      document.body.appendChild(h);
+      setTimeout(() => h.remove(), dur + 50);
+    }
+
+    let heartTimer = setInterval(() => spawnHeart(), 900);
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) clearInterval(heartTimer);
+      else heartTimer = setInterval(() => spawnHeart(), 900);
+    });
+
+    // ====== Инициализация ======
+    // стартовый фон + лайк UI
+    bgA.style.setProperty("--c1", palettes[0][0]);
+    bgA.style.setProperty("--c2", palettes[0][1]);
+    bgA.style.setProperty("--c3", palettes[0][2]);
+    bgA.classList.add("on");
+    renderLikeUI(0);
+
+    // первый тик параллакса
+    requestAnimationFrame(parallaxTick);
+  </script>
+</body>
+</html>
